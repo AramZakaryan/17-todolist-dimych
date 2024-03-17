@@ -19,18 +19,15 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Actio
                 [action.todolistId]: state[action.todolistId]
                     .map(t => t.id === action.taskId ? {...t, ...action.model} : t)
             }
-        // case 'ADD-TODOLIST':
-        case 'todolist/addTodolistAC':
-            return {...state, [action.payload.todolist.id]: []}
-        // case 'REMOVE-TODOLIST':
-        case 'todolist/removeTodolistAC':
+        case 'ADD-TODOLIST':
+            return {...state, [action.todolist.id]: []}
+        case 'REMOVE-TODOLIST':
             const copyState = {...state}
-            delete copyState[action.payload.todolistId]
+            delete copyState[action.id]
             return copyState
-        // case 'SET-TODOLISTS': {
-        case 'todolist/setTodolistsAC': {
+        case 'SET-TODOLISTS': {
             const copyState = {...state}
-            action.payload.todolists.forEach(tl => {
+            action.todolists.forEach(tl => {
                 copyState[tl.id] = []
             })
             return copyState
@@ -54,12 +51,12 @@ export const setTasksAC = (tasks: Array<TaskType>, todolistId: string) =>
 
 // thunks
 export const fetchTasksTC = (todolistId: string) => (dispatch: Dispatch<ActionsType | SetAppStatusActionType>) => {
-    dispatch(setAppStatusAC({status:'loading'}))
+    dispatch(setAppStatusAC('loading'))
     todolistsAPI.getTasks(todolistId)
         .then((res) => {
             const tasks = res.data.items
             dispatch(setTasksAC(tasks, todolistId))
-            dispatch(setAppStatusAC({status:'succeeded'}))
+            dispatch(setAppStatusAC('succeeded'))
         })
 }
 export const removeTaskTC = (taskId: string, todolistId: string) => (dispatch: Dispatch<ActionsType>) => {
@@ -70,14 +67,14 @@ export const removeTaskTC = (taskId: string, todolistId: string) => (dispatch: D
         })
 }
 export const addTaskTC = (title: string, todolistId: string) => (dispatch: Dispatch<ActionsType | SetAppErrorActionType | SetAppStatusActionType>) => {
-    dispatch(setAppStatusAC({status:'loading'}))
+    dispatch(setAppStatusAC('loading'))
     todolistsAPI.createTask(todolistId, title)
         .then(res => {
             if (res.data.resultCode === 0) {
                 const task = res.data.data.item
                 const action = addTaskAC(task)
                 dispatch(action)
-                dispatch(setAppStatusAC({status:'succeeded'}))
+                dispatch(setAppStatusAC('succeeded'))
             } else {
                 handleServerAppError(res.data, dispatch);
             }
