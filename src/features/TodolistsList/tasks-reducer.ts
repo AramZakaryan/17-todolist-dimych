@@ -25,9 +25,9 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Actio
             const copyState = {...state}
             delete copyState[action.payload.id]
             return copyState
-        case 'SET-TODOLISTS': {
+        case 'todolist/setTodolistsAC': {
             const copyState = {...state}
-            action.todolists.forEach(tl => {
+            action.payload.todolists.forEach(tl => {
                 copyState[tl.id] = []
             })
             return copyState
