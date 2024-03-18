@@ -16,7 +16,8 @@ import {Action, Dispatch} from 'redux'
 import {AppRootStateType} from '../../app/store'
 import {setAppErrorAC, SetAppErrorActionType, setAppStatusAC, SetAppStatusActionType} from '../../app/app-reducer'
 import {handleServerAppError, handleServerNetworkError} from '../../utils/error-utils'
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createSlice, current, PayloadAction} from "@reduxjs/toolkit";
+import {clearTasksAndTodolists} from "../../common/actions/common.actions";
 
 const initialState: TasksStateType = {}
 
@@ -53,7 +54,7 @@ const slice = createSlice({
                 t.id === action.payload.taskId
             )
             if (index > -1) {
-                tasks[index]={...tasks[index], ...action.payload.model}
+                tasks[index] = {...tasks[index], ...action.payload.model}
             }
         },
         setTasksAC(state,
@@ -61,9 +62,11 @@ const slice = createSlice({
                        tasks: Array<TaskType>,
                        todolistId: string
                    }>) {
-
             state[action.payload.todolistId] = action.payload.tasks
         },
+        // cleatTasksAC() {
+        //     return {}
+        // }
     },
     extraReducers: builder => {
         builder
@@ -79,6 +82,9 @@ const slice = createSlice({
                     state[tl.id] = []
                 })
             })
+            .addCase(clearTasksAndTodolists, ()=>{
+                return {}
+            })
     }
 })
 
@@ -87,7 +93,8 @@ export const {
     removeTaskAC,
     addTaskAC,
     updateTaskAC,
-    setTasksAC
+    setTasksAC,
+    // cleatTasksAC
 } = slice.actions
 
 export const tasksReducer = slice.reducer
